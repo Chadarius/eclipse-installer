@@ -39,7 +39,8 @@ eclipsever="4.5.2"
 eclipseurl="http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release"
 eclipserel="mars"
 eclipserelver="2"
-# Is this Mac or Linux (I'll Update this someday to work on Mac OS X)
+
+# Is this Mac or Linux
 osis Darwin &&
 {
 	ostype="Darwin"
