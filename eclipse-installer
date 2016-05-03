@@ -1,0 +1,236 @@
+#!/bin/bash
+###########################################################################
+# eclipse-installer will install the Eclipse SDK with PHP, Python, C++,  
+# Ruby, and ShellEd on Ubuntu. It will also setup the Eclipse launch script 
+# to move java7 to the /run/shm RAM Disk for Ubuntu.
+#
+# Copyright (C) 2016 Chad Sutton <casutton@noctrl.edu>
+# This program is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the 
+# Free Software Foundation, either version 3 of the License, or (at your 
+# option) any later version.
+# This program is distributed in the hope that it will be useful, but 
+# WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# See the GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License along 
+# with this program. If not, see http://www.gnu.org/licenses/.
+###########################################################################
+
+
+##### Functions
+osis()
+{
+    local n=0
+    if [[ "$1" = "-n" ]]; then n=1;shift; fi
+
+    # echo $OS|grep $1 -i >/dev/null
+    uname -s |grep -i "$1" >/dev/null
+
+    return $(( $n ^ $? ))
+}
+
+
+##### Setup variables for the OS specific install (Linux or Mac OS X)
+eclipsever="4.5.2"
+#ampstackver="5.6.19-0"
+# download example
+# wget http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/2/eclipse-php-mars-2-linux-gtk-x86_64.tar.gz\&r=1
+eclipseurl="http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release"
+eclipserel="mars"
+eclipserelver="2"
+# Is this Mac or Linux (I'll Update this someday to work on Mac OS X)
+osis Darwin &&
+{
+	ostype="Darwin"
+	installroot="/Applications"
+	eclipsedlfile="eclipse-php-${eclipserel}-${eclipserelver}-macosx-cocoa-x86_64.tar.gz" 
+	eclipsedlurl="${eclipseurl}/${eclipserel}/${eclipserelver}/${eclipsedlfile}&r=1"
+	eclipsedirname="Eclipse.app"
+	eclipseloc="$installroot/$eclipsedirname"
+	eclipsebin="$installroot/$eclipsedirname/Contents/MacOS/eclipse"
+	ampstackloc="$installroot/mampstack"
+	ampstackfile="bitnami-mampstack-${ampstackver}-osx-x86_64-installer.dmg"
+	ampstackurl="https://downloads.bitnami.com/files/stacks/mampstack/${ampstackver}/${ampstackfile}"
+}
+
+osis Linux &&
+{
+    ostype="Linux"
+    installroot="/usr/local"
+    eclipsedlfile="eclipse-php-${eclipserel}-${eclipserelver}-linux-gtk-x86_64.tar.gz" 
+    eclipsedlurl="${eclipseurl}/${eclipserel}/${eclipserelver}/${eclipsedlfile}&r=1"
+    eclipsedirname="eclipse"
+    eclipseloc="$installroot/$eclipsedirname"
+    eclipsebin="$installroot/$eclipsedirname/eclipse"
+    #ampstackloc="$installroot/lampstack"
+    #ampstackfile="bitnami-lampstack-${ampstackver}-linux-64-installer.run"
+    #https://bitnami.com/redirect/to/97711/bitnami-lampstack-5.6.19-0-linux-x64-installer.run
+    #ampstackurl="https://downloads.bitnami.com/files/stacks/lampstack/${ampstackver}/${ampstackfile}"
+}
+
+
+##### Download Eclipse SDK
+echo Installing Eclipse with PHP, Python, C++, Ruby, and ShellEd on Ubuntu.
+echo Operating system is ${ostype}
+echo Installation Root is $installroot
+echo Eclipse download file is $eclipsedlfile
+echo Eclipse install location is $eclipseloc
+
+cd /tmp
+
+
+if [ -e /tmp/$eclipsedlfile ]
+	then
+	rm /tmp/$eclipsedlfile 
+else
+	echo Downloading $eclipsedlfile
+	wget -O $eclipsedlfile "${eclipsedlurl}"
+fi
+
+# Clean up any previous tar file extractions
+if [ -d /tmp/$eclipsedirname ] 
+        then
+        echo Removing /tmp/$eclipsedirname
+        rm -R /tmp/$eclipsedirname
+fi
+
+
+tar xzfv  $eclipsedlfile
+
+# Remove previous eclipse directory
+if [ -d $eclipseloc ] 
+	then
+	echo Removing $eclipseloc
+	sudo rm -R $eclipseloc
+fi
+
+sudo mv /tmp/$eclipsedirname $installroot/
+osis Darwin &&
+{
+Echo Updating ownership rights for $eclipseloc
+sudo chown -R root:admin $eclipseloc
+}
+
+osis Linux &&
+{
+Echo Updating ownership rights for $eclipseloc
+sudo chown -R root:root $eclipseloc
+}
+
+sudo chmod -R 755 $eclipseloc
+
+echo Installing Eclipse Plugins for C++, PHP, Java, and Python
+sudo $eclipsebin -nosplash \
+  -application org.eclipse.equinox.p2.director \
+  -repository http://download.eclipse.org/releases/${eclipserel}/,http://download.eclipse.org/tools/cdt/releases/${eclipserel}/ \
+  -destination $eclipseloc \
+  -installIU org.eclipse.cdt.feature.group \
+  -installIU org.eclipse.dltk.ruby.feature.group
+
+# Install Python Plugin
+sudo $eclipsebin -nosplash \
+  -application org.eclipse.equinox.p2.director \
+  -repository http://pydev.org/updates/ \
+  -destination $eclipseloc \
+  -installIU org.python.pydev.feature.feature.group
+
+# Install LinuxTools
+sudo $eclipsebin -nosplash \
+  -application org.eclipse.equinox.p2.director \
+  -repository http://download.eclipse.org/linuxtools/update \
+  -destination $eclipseloc \
+  -installIU org.eclipse.linuxtools.binutils \
+  -installIU org.eclipse.linuxtools.man.help \
+  -installIU org.eclipse.linuxtools.man.core 
+
+# Install ShellEd Plugin
+sudo $eclipsebin -nosplash \
+  -application org.eclipse.equinox.p2.director \
+  -repository http://download.eclipse.org/technology/dltk/updates-dev/5.4/ \
+  -destination $eclipseloc \
+  -installIU org.eclipse.dltk.sh.feature.group
+
+# Install Drupal Plugin
+sudo $eclipsebin -nosplash \
+  -application org.eclipse.equinox.p2.director \
+  -repository http://xtnd.us/downloads/eclipse \
+  -destination $eclipseloc \
+  -installIU us.xtnd.eclipse.pdt.plugin.drupal
+
+
+# Create launch script and desktop icon
+osis Linux &&
+{
+eclipse_bin=$(cat <<EOF
+#!/bin/sh
+export ECLIPSE_HOME='${installroot}/eclipse'
+cp -r /usr/lib/jvm/java-7-openjdk-amd64 /run/shm
+\$ECLIPSE_HOME/eclipse \$*
+EOF
+)
+
+eclipse_icon=$(cat <<EOF
+[Desktop Entry]
+Encoding=UTF-8
+Name=Eclipse
+Comment=Eclipse IDE
+Exec=eclipse
+Icon=${installroot}/eclipse/icon.xpm
+Terminal=false
+Type=Application
+Categories=GNOME;Application;Development;
+StartupNotify=true
+EOF
+)
+
+eclipse_ini=$(cat <<EOF
+-vm
+/usr/lib/jvm/java-7-openjdk-amd64/bin/java
+-startup
+plugins/org.eclipse.equinox.launcher_1.3.100.v20150511-1540.jar
+--launcher.library
+plugins/org.eclipse.equinox.launcher.gtk.linux.x86_64_1.1.300.v20150602-1417
+-product
+org.eclipse.epp.package.php.product
+--launcher.defaultAction
+openFile
+-showsplash
+org.eclipse.platform
+--launcher.defaultAction
+openFile
+--launcher.appendVmargs
+-vmargs
+-Dosgi.requiredJavaVersion=1.7
+-XX:+AggressiveOpts
+-XX:PermSize=512m
+-XX:MaxPermSize=512m
+-Xms2048m
+-Xmx2048m
+-Xmn512m
+-Xss2m
+-XX:+UseParallelOldGC
+EOF
+)
+
+sudo touch /usr/bin/eclipse
+sudo chmod 755 /usr/bin/eclipse
+echo -e "${eclipse_bin}" | sudo tee /usr/bin/eclipse
+echo -e "${eclipse_icon}" | sudo tee /usr/share/applications/eclipse.desktop
+sudo cp ${rootinstall}/eclipse/eclipse.ini ${rootinstall}/eclipse/eclipse.ini.org
+echo -e "${eclipse_ini}" |sudo tee ${rootinstall}/eclipse/eclipse.ini
+}
+
+#cleanup
+
+if [ -e /tmp/$eclipsedlfile ]
+        then
+        rm /tmp/$eclipsedlfile 
+fi
+
+if [ -d /tmp/eclipse ] 
+        then
+        echo Removing /tmp/eclipse
+        rm -R /tmp/eclipse
+fi
+
