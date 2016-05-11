@@ -86,8 +86,8 @@ if [ -e /tmp/$eclipsedlfile ]
 	rm /tmp/$eclipsedlfile 
 else
 	echo Downloading $eclipsedlfile
-	if [ ostype = "Linux" ] then; wget -O $eclipsedlfile "${eclipsedlurl}"
-	if [ ostype = "Darwin" ] then; curl --output $eclipsedlfile "${eclipsedlurl}"
+	if [ ostype = "Linux" ] then; wget -O $eclipsedlfile "${eclipsedlurl}";fi
+	if [ ostype = "Darwin" ] then; curl --output $eclipsedlfile "${eclipsedlurl}";fi
 fi
 
 # Clean up any previous tar file extractions
