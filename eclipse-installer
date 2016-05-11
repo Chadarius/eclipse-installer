@@ -2,7 +2,7 @@
 ###########################################################################
 # eclipse-installer will install the Eclipse SDK with PHP, Python, C++,  
 # Ruby, and ShellEd on Ubuntu. It will also setup the Eclipse launch script 
-# to move Java 7 OpenJDK to the /run/shm RAM Disk for Ubuntu.
+# to move Oracle 8 Java JDK to the /run/shm RAM Disk for Ubuntu.
 #
 # Copyright (C) 2016 Chad Sutton <casutton@noctrl.edu>
 # This program is free software: you can redistribute it and/or modify it
@@ -77,24 +77,25 @@ echo Operating system is ${ostype}
 echo Installation Root is $installroot
 echo Eclipse download file is $eclipsedlfile
 echo Eclipse install location is $eclipseloc
-
-cd /tmp
+echo Eclipse download URL is $eclipsedlurl
 
 
 if [ -e /tmp/$eclipsedlfile ]
 	then
 	rm /tmp/$eclipsedlfile 
-else
-	echo Downloading $eclipsedlfile
-	if [ ostype = "Linux" ] 
-		then 
-		wget -O $eclipsedlfile "${eclipsedlurl}"
-	fi
-	if [ ostype = "Darwin" ] 
-		then
-		curl --output $eclipsedlfile "${eclipsedlurl}"
-	fi
 fi
+
+osis Linux &&
+{
+	echo Downloading $eclipsedlfile
+	wget -O /tmp/$eclipsedlfile "${eclipsedlurl}"
+}
+
+osis Darwin &&
+{
+	echo Downloading $eclipsedlfile
+	curl --output /tmp/$eclipsedlfile "${eclipsedlurl}"
+}
 
 # Clean up any previous tar file extractions
 if [ -d /tmp/$eclipsedirname ] 
@@ -104,7 +105,12 @@ if [ -d /tmp/$eclipsedirname ]
 fi
 
 
-tar xzfv  $eclipsedlfile
+if tar xzfv  /tmp/$eclipsedlfile -C /tmp;then
+	echo Successfully extracted $eclipsedlfile
+else
+	echo "Error extracting /tmp/$eclipsedlfile! Aborting." 1>&2
+	exit 1
+fi
 
 # Remove previous eclipse directory
 if [ -d $eclipseloc ] 
@@ -122,7 +128,7 @@ sudo chown -R root:admin $eclipseloc
 
 osis Linux &&
 {
-Echo Updating ownership rights for $eclipseloc
+echo Updating ownership rights for $eclipseloc
 sudo chown -R root:root $eclipseloc
 }
 
@@ -135,6 +141,7 @@ sudo $eclipsebin -nosplash \
   -destination $eclipseloc \
   -installIU org.eclipse.cdt.feature.group \
   -installIU org.eclipse.dltk.ruby.feature.group
+  #-installIU org.eclipse.dltk.python.feature.group
 
 # Install Python Plugin
 sudo $eclipsebin -nosplash \
@@ -173,7 +180,7 @@ osis Linux &&
 eclipse_bin=$(cat <<EOF
 #!/bin/sh
 export ECLIPSE_HOME='${installroot}/eclipse'
-cp -r /usr/lib/jvm/java-7-openjdk-amd64 /run/shm
+cp -r /usr/lib/jvm/java-8-oracle /run/shm
 \$ECLIPSE_HOME/eclipse \$*
 EOF
 )
@@ -194,7 +201,7 @@ EOF
 
 eclipse_ini=$(cat <<EOF
 -vm
-/run/shm/java-7-openjdk-amd64/bin/java
+/run/shm/java-8-oracle/jre/bin/java
 -startup
 plugins/org.eclipse.equinox.launcher_1.3.100.v20150511-1540.jar
 --launcher.library
@@ -225,8 +232,8 @@ sudo touch /usr/bin/eclipse
 sudo chmod 755 /usr/bin/eclipse
 echo -e "${eclipse_bin}" | sudo tee /usr/bin/eclipse
 echo -e "${eclipse_icon}" | sudo tee /usr/share/applications/eclipse.desktop
-sudo cp ${rootinstall}/eclipse/eclipse.ini ${rootinstall}/eclipse/eclipse.ini.org
-echo -e "${eclipse_ini}" |sudo tee ${rootinstall}/eclipse/eclipse.ini
+sudo cp ${installroot}/eclipse/eclipse.ini ${installroot}/eclipse/eclipse.ini.org
+echo -e "${eclipse_ini}" |sudo tee ${installroot}/eclipse/eclipse.ini
 }
 
 osis Darwin &&
@@ -258,8 +265,8 @@ openFile
 EOF
 )
 
-sudo cp ${rootinstall}/eclipse/eclipse.ini ${rootinstall}/Contents/Eclipse/eclipse.ini.org
-echo -e "${eclipse_ini}" |sudo tee ${rootinstall}/Contents/Eclipse/eclipse.ini
+sudo cp ${installroot}/eclipse/eclipse.ini ${installroot}/Contents/Eclipse/eclipse.ini.org
+echo -e "${eclipse_ini}" |sudo tee ${installroot}/Contents/Eclipse/eclipse.ini
 }
 
 #cleanup
