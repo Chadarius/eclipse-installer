@@ -2,7 +2,7 @@
 ###########################################################################
 # eclipse-installer will install the Eclipse SDK with PHP, Python, C++,  
 # Ruby, and ShellEd on Ubuntu. It will also setup the Eclipse launch script 
-# to move java7 to the /run/shm RAM Disk for Ubuntu.
+# to move Java 7 OpenJDK to the /run/shm RAM Disk for Ubuntu.
 #
 # Copyright (C) 2016 Chad Sutton <casutton@noctrl.edu>
 # This program is free software: you can redistribute it and/or modify it
@@ -86,7 +86,8 @@ if [ -e /tmp/$eclipsedlfile ]
 	rm /tmp/$eclipsedlfile 
 else
 	echo Downloading $eclipsedlfile
-	wget -O $eclipsedlfile "${eclipsedlurl}"
+	if [ ostype = "Linux" ] then; wget -O $eclipsedlfile "${eclipsedlurl}"
+	if [ ostype = "Darwin" ] then; curl --output $eclipsedlfile "${eclipsedlurl}"
 fi
 
 # Clean up any previous tar file extractions
@@ -187,7 +188,7 @@ EOF
 
 eclipse_ini=$(cat <<EOF
 -vm
-/usr/lib/jvm/java-7-openjdk-amd64/bin/java
+/run/shm/java-7-openjdk-amd64/bin/java
 -startup
 plugins/org.eclipse.equinox.launcher_1.3.100.v20150511-1540.jar
 --launcher.library
@@ -220,6 +221,39 @@ echo -e "${eclipse_bin}" | sudo tee /usr/bin/eclipse
 echo -e "${eclipse_icon}" | sudo tee /usr/share/applications/eclipse.desktop
 sudo cp ${rootinstall}/eclipse/eclipse.ini ${rootinstall}/eclipse/eclipse.ini.org
 echo -e "${eclipse_ini}" |sudo tee ${rootinstall}/eclipse/eclipse.ini
+}
+
+osis Darwin &&
+{
+eclipse_ini=$(cat <<EOF
+-startup
+plugins/org.eclipse.equinox.launcher_1.3.100.v20150511-1540.jar
+--launcher.library
+plugins/org.eclipse.equinox.launcher.gtk.linux.x86_64_1.1.300.v20150602-1417
+-product
+org.eclipse.epp.package.php.product
+--launcher.defaultAction
+openFile
+-showsplash
+org.eclipse.platform
+--launcher.defaultAction
+openFile
+--launcher.appendVmargs
+-vmargs
+-Dosgi.requiredJavaVersion=1.7
+-XX:+AggressiveOpts
+-XX:PermSize=512m
+-XX:MaxPermSize=512m
+-Xms2048m
+-Xmx2048m
+-Xmn512m
+-Xss2m
+-XX:+UseParallelOldGC
+EOF
+)
+
+sudo cp ${rootinstall}/eclipse/eclipse.ini ${rootinstall}/Contents/Eclipse/eclipse.ini.org
+echo -e "${eclipse_ini}" |sudo tee ${rootinstall}/Contents/Eclipse/eclipse.ini
 }
 
 #cleanup
