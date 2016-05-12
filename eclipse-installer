@@ -94,7 +94,9 @@ osis Linux &&
 osis Darwin &&
 {
 	echo Downloading $eclipsedlfile
-	curl --output /tmp/$eclipsedlfile "${eclipsedlurl}"
+	cd /tmp
+	curl -L -o $eclipsedlfile "${eclipsedlurl}"
+	cd -
 }
 
 # Clean up any previous tar file extractions
