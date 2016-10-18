@@ -1,8 +1,9 @@
 #!/bin/bash
 ###########################################################################
 # eclipse-installer will install the Eclipse SDK with PHP, Python, C++,  
-# Ruby, and ShellEd on Ubuntu. It will also setup the Eclipse launch script 
-# to move Oracle 8 Java JDK to the /run/shm RAM Disk for Ubuntu.
+# Ruby, and ShellEd on Ubuntu and MacOS. It will also setup the Eclipse 
+# launch script to move Oracle 8 Java JDK to the /run/shm RAM Disk for 
+# Ubuntu.
 #
 # Copyright (C) 2016 Chad Sutton <casutton@noctrl.edu>
 # This program is free software: you can redistribute it and/or modify it
@@ -32,13 +33,13 @@ osis()
 
 
 ##### Setup variables for the OS specific install (Linux or Mac OS X)
-eclipsever="4.5.2"
+eclipsever="4.6"
 #ampstackver="5.6.19-0"
 # download example
 # wget http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/2/eclipse-php-mars-2-linux-gtk-x86_64.tar.gz\&r=1
 eclipseurl="http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release"
-eclipserel="mars"
-eclipserelver="2"
+eclipserel="neon"
+eclipserelver="1a"
 
 # Is this Mac or Linux
 osis Darwin &&
@@ -50,9 +51,9 @@ osis Darwin &&
 	eclipsedirname="Eclipse.app"
 	eclipseloc="$installroot/$eclipsedirname"
 	eclipsebin="$installroot/$eclipsedirname/Contents/MacOS/eclipse"
-	ampstackloc="$installroot/mampstack"
-	ampstackfile="bitnami-mampstack-${ampstackver}-osx-x86_64-installer.dmg"
-	ampstackurl="https://downloads.bitnami.com/files/stacks/mampstack/${ampstackver}/${ampstackfile}"
+	#ampstackloc="$installroot/mampstack"
+	#ampstackfile="bitnami-mampstack-${ampstackver}-osx-x86_64-installer.dmg"
+	#ampstackurl="https://downloads.bitnami.com/files/stacks/mampstack/${ampstackver}/${ampstackfile}"
 }
 
 osis Linux &&
