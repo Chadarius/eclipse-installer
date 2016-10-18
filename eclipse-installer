@@ -108,7 +108,7 @@ if [ -d /tmp/$eclipsedirname ]
 fi
 
 
-if tar xzfv  /tmp/$eclipsedlfile -C /tmp;then
+if tar xzf  /tmp/$eclipsedlfile -C /tmp > /dev/null 2>&1;then
 	echo Successfully extracted $eclipsedlfile
 else
 	echo "Error extracting /tmp/$eclipsedlfile! Aborting." 1>&2
@@ -119,10 +119,12 @@ fi
 if [ -d $eclipseloc ] 
 	then
 	echo Removing $eclipseloc
-	sudo rm -R $eclipseloc
+	sudo rm -r $eclipseloc
 fi
 
+# Install new Eclipse
 sudo mv /tmp/$eclipsedirname $installroot/
+
 osis Darwin &&
 {
 Echo Updating ownership rights for $eclipseloc
@@ -202,24 +204,13 @@ StartupNotify=true
 EOF
 )
 
-eclipse_ini=$(cat <<EOF
+eclipse_inivm=$(cat <<EOF
 -vm
 /run/shm/java-8-oracle/jre/bin/java
--startup
-plugins/org.eclipse.equinox.launcher_1.3.100.v20150511-1540.jar
---launcher.library
-plugins/org.eclipse.equinox.launcher.gtk.linux.x86_64_1.1.300.v20150602-1417
--product
-org.eclipse.epp.package.php.product
---launcher.defaultAction
-openFile
--showsplash
-org.eclipse.platform
---launcher.defaultAction
-openFile
---launcher.appendVmargs
--vmargs
--Dosgi.requiredJavaVersion=1.7
+EOF
+)
+
+eclipse_ini=$(cat <<EOF
 -XX:+AggressiveOpts
 -XX:PermSize=512m
 -XX:MaxPermSize=512m
@@ -227,7 +218,6 @@ openFile
 -Xmx2048m
 -Xmn512m
 -Xss2m
--XX:+UseParallelOldGC
 EOF
 )
 
@@ -235,28 +225,17 @@ sudo touch /usr/bin/eclipse
 sudo chmod 755 /usr/bin/eclipse
 echo -e "${eclipse_bin}" | sudo tee /usr/bin/eclipse
 echo -e "${eclipse_icon}" | sudo tee /usr/share/applications/eclipse.desktop
-sudo cp ${installroot}/eclipse/eclipse.ini ${installroot}/eclipse/eclipse.ini.org
-echo -e "${eclipse_ini}" |sudo tee ${installroot}/eclipse/eclipse.ini
+sudo mv ${installroot}/eclipse/eclipse.ini ${installroot}/eclipse/eclipse.ini.org
+echo -e "${eclipse_inivm}" |tee /tmp/eclipsevm.ini
+echo -e "${eclipse_ini}" |tee /tmp/eclipse.ini
+cat /tmp/eclipsevm.ini ${installroot}/eclipse/eclipse.ini.org /tmp/eclipse.ini | sudo tee ${installroot}/eclipse/eclipse.ini
+sudo sed --in-place "/-Xms256m/d" ${eclipseloc}/Contents/Eclipse/eclipse.ini
+sudo sed --in-place "/-Xmx1024m/d" ${eclipseloc}/Contents/Eclipse/eclipse.ini
 }
 
 osis Darwin &&
 {
 eclipse_ini=$(cat <<EOF
--startup
-plugins/org.eclipse.equinox.launcher_1.3.100.v20150511-1540.jar
---launcher.library
-plugins/org.eclipse.equinox.launcher.gtk.linux.x86_64_1.1.300.v20150602-1417
--product
-org.eclipse.epp.package.php.product
---launcher.defaultAction
-openFile
--showsplash
-org.eclipse.platform
---launcher.defaultAction
-openFile
---launcher.appendVmargs
--vmargs
--Dosgi.requiredJavaVersion=1.7
 -XX:+AggressiveOpts
 -XX:PermSize=512m
 -XX:MaxPermSize=512m
@@ -264,12 +243,15 @@ openFile
 -Xmx2048m
 -Xmn512m
 -Xss2m
--XX:+UseParallelOldGC
 EOF
 )
 
-sudo cp ${installroot}/eclipse/eclipse.ini ${installroot}/Contents/Eclipse/eclipse.ini.org
-echo -e "${eclipse_ini}" |sudo tee ${installroot}/Contents/Eclipse/eclipse.ini
+sudo cp ${eclipseloc}/Contents/Eclipse/eclipse.ini ${eclipseloc}/Contents/Eclipse/eclipse.ini.org
+sudo rm ${eclipseloc}/Contents/Eclipse/eclipse.ini
+echo -e "${eclipse_ini}" |tee /tmp/eclipse.ini
+cat ${eclipseloc}/Contents/Eclipse/eclipse.ini.org /tmp/eclipse.ini | sudo tee ${eclipseloc}/Contents/Eclipse/eclipse.ini 
+sudo sed -i '' "/-Xms256m/d" ${eclipseloc}/Contents/Eclipse/eclipse.ini
+sudo sed -i '' "/-Xmx1024m/d" ${eclipseloc}/Contents/Eclipse/eclipse.ini
 }
 
 #cleanup
