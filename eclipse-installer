@@ -229,8 +229,8 @@ sudo mv ${installroot}/eclipse/eclipse.ini ${installroot}/eclipse/eclipse.ini.or
 echo -e "${eclipse_inivm}" |tee /tmp/eclipsevm.ini
 echo -e "${eclipse_ini}" |tee /tmp/eclipse.ini
 cat /tmp/eclipsevm.ini ${installroot}/eclipse/eclipse.ini.org /tmp/eclipse.ini | sudo tee ${installroot}/eclipse/eclipse.ini
-sudo sed --in-place "/-Xms256m/d" ${eclipseloc}/Contents/Eclipse/eclipse.ini
-sudo sed --in-place "/-Xmx1024m/d" ${eclipseloc}/Contents/Eclipse/eclipse.ini
+sudo sed --in-place "/-Xms256m/d" ${installroot}/eclipse/eclipse.ini
+sudo sed --in-place "/-Xmx1024m/d" ${installroot}/eclipse/eclipse.ini
 }
 
 osis Darwin &&
