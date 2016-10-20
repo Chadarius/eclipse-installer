@@ -167,7 +167,7 @@ sudo $eclipsebin -nosplash \
 # Install ShellEd Plugin
 sudo $eclipsebin -nosplash \
   -application org.eclipse.equinox.p2.director \
-  -repository http://download.eclipse.org/technology/dltk/updates-dev/5.6/ \
+  -repository http://download.eclipse.org/technology/dltk/updates-dev/latest/ \
   -destination $eclipseloc \
   -installIU org.eclipse.dltk.core \
   -installIU org.eclipse.dltk.sh.feature.group
