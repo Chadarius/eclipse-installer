@@ -33,13 +33,14 @@ osis()
 
 
 ##### Setup variables for the OS specific install (Linux or Mac OS X)
-eclipsever="4.6"
+eclipsever="4.6.3"
 #ampstackver="5.6.19-0"
 # download example
-# wget http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/2/eclipse-php-mars-2-linux-gtk-x86_64.tar.gz\&r=1
-eclipseurl="http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release"
+# http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/neon/3/eclipse-php-neon-3-linux-gtk-x86_64.tar.gz
+# http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/2/eclipse-php-mars-2-linux-gtk-x86_64.tar.gz\&r=1
+eclipseurl="http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/"
 eclipserel="neon"
-eclipserelver="1a"
+eclipserelver="3"
 
 # Is this Mac or Linux
 osis Darwin &&
@@ -123,21 +124,21 @@ if [ -d $eclipseloc ]
 fi
 
 # Install new Eclipse
-sudo mv /tmp/$eclipsedirname $installroot/
+sudo mv /tmp/$eclipsedirname $installroot/ 2>&1
 
 osis Darwin &&
 {
 Echo Updating ownership rights for $eclipseloc
-sudo chown -R root:admin $eclipseloc
+sudo chown -R root:admin $eclipseloc 2>&1
 }
 
 osis Linux &&
 {
 echo Updating ownership rights for $eclipseloc
-sudo chown -R root:root $eclipseloc
+sudo chown -R root:root $eclipseloc 2>&1
 }
 
-sudo chmod -R 755 $eclipseloc
+sudo chmod -R 755 $eclipseloc 2>&1
 
 echo Installing Eclipse Plugins for C++, PHP, Java, and Python
 sudo $eclipsebin -nosplash \
@@ -145,7 +146,8 @@ sudo $eclipsebin -nosplash \
   -repository http://download.eclipse.org/releases/${eclipserel}/,http://download.eclipse.org/tools/cdt/releases/${eclipserel}/ \
   -destination $eclipseloc \
   -installIU org.eclipse.cdt.feature.group \
-  -installIU org.eclipse.dltk.ruby.feature.group
+ -installIU org.eclipse.dltk.ruby.feature.group \
+ 2>&1
   #-installIU org.eclipse.dltk.python.feature.group
 
 # Install Python Plugin
@@ -153,7 +155,8 @@ sudo $eclipsebin -nosplash \
   -application org.eclipse.equinox.p2.director \
   -repository http://pydev.org/updates/ \
   -destination $eclipseloc \
-  -installIU org.python.pydev.feature.feature.group
+ -installIU org.python.pydev.feature.feature.group \
+ 2>&1
 
 # Install LinuxTools
 sudo $eclipsebin -nosplash \
@@ -162,7 +165,8 @@ sudo $eclipsebin -nosplash \
   -destination $eclipseloc \
   -installIU org.eclipse.linuxtools.binutils \
   -installIU org.eclipse.linuxtools.man.help \
-  -installIU org.eclipse.linuxtools.man.core 
+-installIU org.eclipse.linuxtools.man.core \
+2>&1
 
 # Install ShellEd Plugin
 sudo $eclipsebin -nosplash \
@@ -170,14 +174,25 @@ sudo $eclipsebin -nosplash \
   -repository http://download.eclipse.org/technology/dltk/updates-dev/latest/ \
   -destination $eclipseloc \
   -installIU org.eclipse.dltk.core \
-  -installIU org.eclipse.dltk.sh.feature.group
+-installIU org.eclipse.dltk.sh.feature.group \
+2>&1
+
+sudo $eclipsebin -nosplash \
+  -application org.eclipse.equinox.p2.director \
+  -repository http://download.eclipse.org/technology/dltk/updates-dev/latest/ \
+  -destination $eclipseloc \
+  -installIU org.eclipse.dltk.core \
+-installIU org.eclipse.dltk.sh.sdk.feature.group \
+2>&1
+
 
 # Install Drupal Plugin
 sudo $eclipsebin -nosplash \
   -application org.eclipse.equinox.p2.director \
   -repository http://xtnd.us/downloads/eclipse \
   -destination $eclipseloc \
-  -installIU us.xtnd.eclipse.pdt.plugin.drupal
+-installIU us.xtnd.eclipse.pdt.plugin.drupal \
+2>&1
 
 
 # Create launch script and desktop icon
@@ -211,10 +226,11 @@ eclipse_inivm=$(cat <<EOF
 EOF
 )
 
+# -XX:MaxPermSize=512m
+
 eclipse_ini=$(cat <<EOF
 -XX:+AggressiveOpts
 -XX:PermSize=512m
--XX:MaxPermSize=512m
 -Xms2048m
 -Xmx2048m
 -Xmn512m
@@ -234,12 +250,12 @@ sudo sed --in-place "/-Xms256m/d" ${installroot}/eclipse/eclipse.ini
 sudo sed --in-place "/-Xmx1024m/d" ${installroot}/eclipse/eclipse.ini
 }
 
+#-XX:MaxPermSize=512m
 osis Darwin &&
 {
 eclipse_ini=$(cat <<EOF
 -XX:+AggressiveOpts
 -XX:PermSize=512m
--XX:MaxPermSize=512m
 -Xms2048m
 -Xmx2048m
 -Xmn512m
