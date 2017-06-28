@@ -38,9 +38,10 @@ eclipsever="4.6.3"
 # download example
 # http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/neon/3/eclipse-php-neon-3-linux-gtk-x86_64.tar.gz
 # http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/2/eclipse-php-mars-2-linux-gtk-x86_64.tar.gz\&r=1
+# https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/oxygen/R/eclipse-php-oxygen-R-linux-gtk-x86_64.tar.gz&mirror_id=1135
 eclipseurl="http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/"
-eclipserel="neon"
-eclipserelver="3"
+eclipserel="oxygen"
+eclipserelver="R"
 
 # Is this Mac or Linux
 osis Darwin &&
