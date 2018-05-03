@@ -147,8 +147,8 @@ sudo $eclipsebin -nosplash \
   -repository http://download.eclipse.org/releases/${eclipserel}/,http://download.eclipse.org/tools/cdt/releases/${eclipserel}/ \
   -destination $eclipseloc \
   -installIU org.eclipse.cdt.feature.group \
- -installIU org.eclipse.dltk.ruby.feature.group \
- 2>&1
+  -installIU org.eclipse.dltk.ruby.feature.group \
+  2>&1
   #-installIU org.eclipse.dltk.python.feature.group
 
 # Install Python Plugin
@@ -156,8 +156,8 @@ sudo $eclipsebin -nosplash \
   -application org.eclipse.equinox.p2.director \
   -repository http://pydev.org/updates/ \
   -destination $eclipseloc \
- -installIU org.python.pydev.feature.feature.group \
- 2>&1
+  -installIU org.python.pydev.feature.feature.group \
+  2>&1
 
 # Install LinuxTools
 sudo $eclipsebin -nosplash \
@@ -166,8 +166,8 @@ sudo $eclipsebin -nosplash \
   -destination $eclipseloc \
   -installIU org.eclipse.linuxtools.binutils \
   -installIU org.eclipse.linuxtools.man.help \
--installIU org.eclipse.linuxtools.man.core \
-2>&1
+  -installIU org.eclipse.linuxtools.man.core \
+  2>&1
 
 # Install ShellEd Plugin
 sudo $eclipsebin -nosplash \
@@ -175,16 +175,16 @@ sudo $eclipsebin -nosplash \
   -repository http://download.eclipse.org/technology/dltk/updates-dev/latest/ \
   -destination $eclipseloc \
   -installIU org.eclipse.dltk.core \
--installIU org.eclipse.dltk.sh.feature.group \
-2>&1
+  -installIU org.eclipse.dltk.sh.feature.group \
+  2>&1
 
 sudo $eclipsebin -nosplash \
   -application org.eclipse.equinox.p2.director \
   -repository http://download.eclipse.org/technology/dltk/updates-dev/latest/ \
   -destination $eclipseloc \
   -installIU org.eclipse.dltk.core \
--installIU org.eclipse.dltk.sh.sdk.feature.group \
-2>&1
+  -installIU org.eclipse.dltk.sh.sdk.feature.group \
+  2>&1
 
 
 # Install Drupal Plugin
@@ -192,8 +192,8 @@ sudo $eclipsebin -nosplash \
   -application org.eclipse.equinox.p2.director \
   -repository http://xtnd.us/downloads/eclipse \
   -destination $eclipseloc \
--installIU us.xtnd.eclipse.pdt.plugin.drupal \
-2>&1
+  -installIU us.xtnd.eclipse.pdt.plugin.drupal \
+  2>&1
 
 
 # Create launch script and desktop icon
