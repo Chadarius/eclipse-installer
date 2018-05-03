@@ -48,7 +48,7 @@ osis Darwin &&
 {
 	ostype="Darwin"
 	installroot="/Applications"
-	eclipsedlfile="eclipse-php-${eclipserel}-${eclipserelver}-macosx-cocoa-x86_64.tar.gz" 
+	eclipsedlfile="eclipse-php-${eclipserel}-${eclipserelver}-macosx-cocoa-x86_64.dmg" 
 	eclipsedlurl="${eclipseurl}/${eclipserel}/${eclipserelver}/${eclipsedlfile}&r=1"
 	eclipsedirname="Eclipse.app"
 	eclipseloc="$installroot/$eclipsedirname"
@@ -110,12 +110,21 @@ if [ -d /tmp/$eclipsedirname ]
 fi
 
 
-if tar xzf  /tmp/$eclipsedlfile -C /tmp > /dev/null 2>&1;then
-	echo Successfully extracted $eclipsedlfile
-else
-	echo "Error extracting /tmp/$eclipsedlfile! Aborting." 1>&2
-	exit 1
-fi
+osis Linux &&
+{
+	if tar xzf  /tmp/$eclipsedlfile -C /tmp > /dev/null 2>&1;then
+		echo Successfully extracted $eclipsedlfile
+	else
+		echo "Error extracting /tmp/$eclipsedlfile! Aborting." 1>&2
+		exit 1
+	fi
+}
+
+osis Darwin &&
+{
+	echo Mounting Eclipse DMG volume
+	hdiutil attach -nobrowse -quiet -mountpoint /Volumes/eclipse /tmp/$eclipsedlfile
+}
 
 # Remove previous eclipse directory
 if [ -d $eclipseloc ] 
@@ -125,7 +134,16 @@ if [ -d $eclipseloc ]
 fi
 
 # Install new Eclipse
-sudo mv /tmp/$eclipsedirname $installroot/ 2>&1
+echo Copying install files for Eclipse
+osis Linux &&
+{
+	sudo mv /tmp/$eclipsedirname $installroot/ 2>&1
+}
+
+osis Darwin &&
+{
+	sudo cp -a /Volumes/eclipse/Eclipse.app $installroot/ 2>&1
+}
 
 osis Darwin &&
 {
@@ -273,6 +291,13 @@ sudo sed -i '' "/-Xmx1024m/d" ${eclipseloc}/Contents/Eclipse/eclipse.ini
 }
 
 #cleanup
+echo Cleaning up download tmp files
+
+osis Darwin &&
+{
+	echo Unmounting DMG volume
+	hdiutil detach -quiet /Volumes/eclipse
+}
 
 if [ -e /tmp/$eclipsedlfile ]
         then
@@ -284,3 +309,5 @@ if [ -d /tmp/eclipse ]
         echo Removing /tmp/eclipse
         rm -R /tmp/eclipse
 fi
+
+
