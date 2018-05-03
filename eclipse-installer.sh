@@ -48,7 +48,7 @@ osis Darwin &&
 {
 	ostype="Darwin"
 	installroot="/Applications"
-	eclipsedlfile="eclipse-php-${eclipserel}-${eclipserelver}-macosx-cocoa-x86_64.dmg" 
+	eclipsedlfile="eclipse-php-${eclipserel}-${eclipserelver}-macosx-cocoa-x86_64.tar.gz" 
 	eclipsedlurl="${eclipseurl}/${eclipserel}/${eclipserelver}/${eclipsedlfile}&r=1"
 	eclipsedirname="Eclipse.app"
 	eclipseloc="$installroot/$eclipsedirname"
@@ -103,29 +103,20 @@ osis Darwin &&
 }
 
 # Clean up any previous tar file extractions
-osis Linux &&
-{
-	if [ -d /tmp/$eclipsedirname ] 
-			then
-			echo Removing /tmp/$eclipsedirname
-			rm -R /tmp/$eclipsedirname
-	fi
+if [ -d /tmp/$eclipsedirname ] 
+        then
+        echo Removing /tmp/$eclipsedirname
+        rm -R /tmp/$eclipsedirname
+fi
 
 
-	if tar xzf  /tmp/$eclipsedlfile -C /tmp > /dev/null 2>&1;then
-		echo Successfully extracted $eclipsedlfile
-	else
-		echo "Error extracting /tmp/$eclipsedlfile! Aborting." 1>&2
-		exit 1
-	fi
-}
+if tar xzf  /tmp/$eclipsedlfile -C /tmp > /dev/null 2>&1;then
+	echo Successfully extracted $eclipsedlfile
+else
+	echo "Error extracting /tmp/$eclipsedlfile! Aborting." 1>&2
+	exit 1
+fi
 
-# Eclipse PDT project switched to a DMG file
-osis Darwin &&
-{
-	hdiutil attach -nobrowse -quiet -mountpoint /Volumes/eclipse /tmp/$eclipsedlfile
-	
-}
 # Remove previous eclipse directory
 if [ -d $eclipseloc ] 
 	then
@@ -134,16 +125,16 @@ if [ -d $eclipseloc ]
 fi
 
 # Install new Eclipse
+sudo mv /tmp/$eclipsedirname $installroot/ 2>&1
+
 osis Darwin &&
 {
-sudo cp -a /Volumes/eclipse/Eclipse.app $installroot/ 2>&1
 Echo Updating ownership rights for $eclipseloc
 sudo chown -R root:admin $eclipseloc 2>&1
 }
 
 osis Linux &&
 {
-sudo mv /tmp/$eclipsedirname $installroot/ 2>&1
 echo Updating ownership rights for $eclipseloc
 sudo chown -R root:root $eclipseloc 2>&1
 }
@@ -293,4 +284,3 @@ if [ -d /tmp/eclipse ]
         echo Removing /tmp/eclipse
         rm -R /tmp/eclipse
 fi
-
