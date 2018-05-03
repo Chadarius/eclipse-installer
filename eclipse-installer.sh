@@ -33,7 +33,7 @@ osis()
 
 
 ##### Setup variables for the OS specific install (Linux or Mac OS X)
-eclipsever="4.6.3"
+eclipsever="7"
 #ampstackver="5.6.19-0"
 # download example
 # http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/neon/3/eclipse-php-neon-3-linux-gtk-x86_64.tar.gz
@@ -41,7 +41,7 @@ eclipsever="4.6.3"
 # https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/oxygen/R/eclipse-php-oxygen-R-linux-gtk-x86_64.tar.gz&mirror_id=1135
 eclipseurl="http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/"
 eclipserel="oxygen"
-eclipserelver="R"
+eclipserelver="3a"
 
 # Is this Mac or Linux
 osis Darwin &&
