@@ -39,9 +39,11 @@ eclipsever="7"
 # http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/neon/3/eclipse-php-neon-3-linux-gtk-x86_64.tar.gz
 # http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/2/eclipse-php-mars-2-linux-gtk-x86_64.tar.gz\&r=1
 # https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/oxygen/R/eclipse-php-oxygen-R-linux-gtk-x86_64.tar.gz&mirror_id=1135
+# https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2019-06/R/eclipse-jee-2019-06-R-macosx-cocoa-x86_64.dmg
+
 eclipseurl="http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/"
-eclipserel="oxygen"
-eclipserelver="3a"
+eclipserel="2019-06"
+eclipserelver="R"
 
 # Is this Mac or Linux
 osis Darwin &&
@@ -166,6 +168,7 @@ sudo $eclipsebin -nosplash \
   -destination $eclipseloc \
   -installIU org.eclipse.cdt.feature.group \
   -installIU org.eclipse.dltk.ruby.feature.group \
+  -installIU org.eclipse.php.feature.group \
   2>&1
   #-installIU org.eclipse.dltk.python.feature.group
 
