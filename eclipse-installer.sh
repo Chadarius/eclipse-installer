@@ -223,7 +223,7 @@ osis Linux &&
 eclipse_bin=$(cat <<EOF
 #!/bin/sh
 export ECLIPSE_HOME='${installroot}/eclipse'
-cp -r /usr/lib/jvm/java-8-oracle /run/shm
+cp -r /usr/lib/jvm/java-11-openjdk-amd64 /run/shm
 \$ECLIPSE_HOME/eclipse \$*
 EOF
 )
@@ -244,7 +244,7 @@ EOF
 
 eclipse_inivm=$(cat <<EOF
 -vm
-/run/shm/java-8-oracle/jre/bin/java
+/run/shm/java-11-openjdk-amd64/bin/java
 EOF
 )
 
