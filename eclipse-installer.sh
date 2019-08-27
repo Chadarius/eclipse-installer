@@ -1,6 +1,6 @@
 #!/bin/bash
 ###########################################################################
-# eclipse-installer will install the Eclipse SDK with PHP, Python, C++,  
+# eclipse-installer will install Eclipse with Java, PHP, Python, C++,  
 # Ruby, and ShellEd on Ubuntu and MacOS. It will also setup the Eclipse 
 # launch script to move Oracle 8 Java JDK to the /run/shm RAM Disk for 
 # Ubuntu.
