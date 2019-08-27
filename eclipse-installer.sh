@@ -2,7 +2,7 @@
 ###########################################################################
 # eclipse-installer will install Eclipse with Java, PHP, Python, C++,  
 # Ruby, and ShellEd on Ubuntu and MacOS. It will also setup the Eclipse 
-# launch script to move Oracle 8 Java JDK to the /run/shm RAM Disk for 
+# launch script to move OpenJDK to the /run/shm RAM Disk for 
 # Ubuntu.
 #
 # Copyright (C) 2016 Chad Sutton <casutton@noctrl.edu>

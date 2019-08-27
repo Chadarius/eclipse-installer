@@ -1,8 +1,8 @@
 # Autoinstall Eclipse on Ubuntu and MacOS #
 
-This script, eclipse-installer, will install the Eclipse SDK with PHP, Python, C++, 
+This script, eclipse-installer, will install Eclipse with Java, PHP, Python, C++, 
 Ruby, and ShellEd on Ubuntu and MacOS. It will also setup the Eclipse 
-launch script to move Oracle 8 Java JDK to the /run/shm RAM Disk for 
+launch script to move OpenJDK to the /run/shm RAM Disk for 
 Ubuntu only.
 
 To install new or different versions of Eclipse change the eclipserel and 
